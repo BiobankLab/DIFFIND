@@ -7,7 +7,7 @@ import json
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-v', '--version', help='display version number and exit', action='version', version='%(prog)s 0.0.1')
+parser.add_argument('-v', '--version', help='display version number and exit', action='version', version='%(prog)s 0.0.2')
 parser.add_argument('-c', help='Sequence identity threshold', type=float, required=False, default=0.9)
 parser.add_argument('-g', help='By cd hit’s default algorithm, a sequence is clustered to the first cluster that meet the threshold (fast mode). If set to 1, the program will cluster it into the most similar cluster that meet the threshold(accurate but slow mode)', type=int, required=False, default=0)
 parser.add_argument('-s2', help='length difference cutoff for db1, default 1.0 by default, seqs in db1 >= seqs in db2 in a same cluster if set to 0.9, seqs in db1 may just >= 90% seqs in db2', type=float, required=False, default=1.0)
@@ -35,4 +35,4 @@ if not os.path.exists(args.odir.rstrip('/')+'/clusters'):
     os.makedirs(args.odir.rstrip('/')+'/clusters')
 
 # subprocess.call(["PYTHONPATH=''", 'luigi', '--module', 'cdhit-wf', 'clusterise', '--param', json.dumps(cdict)])
-subprocess.call(['luigi', '--module', 'cdhit-wf', 'clusterise', '--param', json.dumps(cdict)])
+subprocess.call(['luigi', '--module', 'diffind-wf', 'clusterise', '--param', json.dumps(cdict)])
