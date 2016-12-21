@@ -10,6 +10,7 @@ from fatool import *
 
 import csv
 import traceback
+import sys
 
 '''
 ref = i
@@ -68,7 +69,9 @@ class plot(luigi.Task):
         #  set flags wheteher to remove all non zeros values or not (not meaningful)
         if self.param['nz']:
             nz = 0
+        sys.setrecursionlimit(10000)
         df = chit_set.to_df(z, nz)
+        #plot = chit_set.make_dendrogram2(df);
         plot = chit_set.make_dendrogram(df, (40, 20), self.param['top_font'])
         # print self.param['of']
         plot.savefig(self.param['odir']+'/'+self.param['of'], bbox_inches='tight')
