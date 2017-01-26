@@ -18,6 +18,27 @@ files [i2]
 '''
 
 
+class clean_ref(luigi.Task):
+    param = luigi.DictParameter()
+    
+    def requires(self):
+        return []
+        
+    def run(self):
+        ref = Fa.load_from_file(str(self.param['ref']))
+        #len(ref)
+        i = 0
+        for r in ref.contigs:
+            r.name =  '>'+str("%04d" % i)+r.name[1:]
+            i+=1
+        #self.param['ref'] = self.param['ref'].rsplit('.',1)[0]+'_cleared'+self.param['ref'].rsplit('.',1)[1]
+        ref.write(str(self.param['ref_cleared']))
+        
+    def output(self):
+        #self.param['ref'].rsplit('.',1)[0]+'_cleared'+self.param['ref'].rsplit('.',1)[1]
+        return luigi.LocalTarget(str(self.param['ref_cleared']))
+        
+
 class cdhit_analisys(luigi.Task):
     param = luigi.DictParameter()
 
@@ -26,12 +47,16 @@ class cdhit_analisys(luigi.Task):
         subprocess.call(cmd)
 
     def requires(self):
-        return []
+        return [clean_ref(self.param)]
 
     def run(self):
         cmd_list = []
         for f in self.param['files']:
-            cmd_list.append(['cdhit-2d', '-i', str(self.param['ref']), '-i2', str(f), '-c', str(self.param['c']), '-g', str(self.param['g']), '-s2', str(self.param['s2']), '-o', self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]])
+            if self.param['nucleotide'] == True:
+                cmd_list.append(['cdhit-est-2d', '-i', str(self.param['ref_cleared']), '-i2', str(f), '-c', str(self.param['c']), '-g', str(self.param['g']), '-s2', str(self.param['s2']), '-o', self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]])
+            else:
+                cmd_list.append(['cdhit-2d', '-i', str(self.param['ref_cleared']), '-i2', str(f), '-c', str(self.param['c']), '-g', str(self.param['g']), '-s2', str(self.param['s2']), '-o', self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]])
+        print cmd_list
         p = Pool(int(self.param['threads']))
         # p.map(cdhit_analisys.exec_cdhit, cmd_list)
         with Pool(int(self.param['threads'])) as p:
@@ -71,6 +96,12 @@ class plot(luigi.Task):
             nz = 0
         sys.setrecursionlimit(10000)
         df = chit_set.to_df(z, nz)
+        with open(self.param['odir']+'/'+'non-zeros.txt', 'wb') as nzf:
+            for q in chit_set.all_non_zeros:
+                nzf.write(q[4:]+'\n')
+        with open(self.param['odir']+'/'+'zeros.txt', 'wb') as zf:
+            for q in chit_set.all_zeros:
+                zf.write(q[4:]+'\n')
         #plot = chit_set.make_dendrogram2(df);
         plot = chit_set.make_dendrogram(df, (40, 20), self.param['top_font'])
         # print self.param['of']
@@ -90,7 +121,7 @@ class plot(luigi.Task):
        '''
 
     def output(self):
-        return luigi.LocalTarget(self.param['odir']+'/'+'dendro.pdf')
+        return luigi.LocalTarget(self.param['odir']+'/'+self.param['of'])
         # return [luigi.LocalTarget(self.param['odir']+'/'+'dendro.pdf'), luigi.LocalTarget(self.param['odir']+'/'+'summary.txt')]
 
 
@@ -105,7 +136,7 @@ class clusterise(luigi.Task):
         try:
             # /home/blul/BIOIT/blul_cdhit/workflow/cluster_info.csv
             c = 1
-            ref_fa = Fa.load_from_file(str(self.param['ref']))
+            ref_fa = Fa.load_from_file(str(self.param['ref_cleared']))
             cluster_contigs = []
             outr = []
 
@@ -114,7 +145,7 @@ class clusterise(luigi.Task):
                 reader = csv.reader(f, delimiter=';')
                 header = reader.next()
                 for r in reader:
-
+                    #if curent cluster num differ from prev one
                     if c != int(r[1]):
                         result_fa = Fa(cluster_contigs, 'c'+str(c))
                         result_fa.write(str(self.param['odir']+'/clusters/'+'c_'+str(c)+'.fasta'))
@@ -122,8 +153,9 @@ class clusterise(luigi.Task):
                         c = int(r[1])
 
                     cc = ref_fa.extract_by_name_frag(r[2])
+                    cc.name = '>'+cc.name[5:]
                     cluster_contigs += cc
-                    r.append(cc[0].name)
+                    r.append('>'+cc[0].name[5:])
                     r.append(cc[0].seq)
                     outr.append(r)
 
