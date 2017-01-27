@@ -153,7 +153,9 @@ class clusterise(luigi.Task):
                         c = int(r[1])
 
                     cc = ref_fa.extract_by_name_frag(r[2])
-                    cc.name = '>'+cc.name[5:]
+                    #print cc
+                    cc[0].name = '>'+cc[0].name[5:]
+                    #print cc[0].name
                     cluster_contigs += cc
                     r.append('>'+cc[0].name[5:])
                     r.append(cc[0].seq)
