@@ -20,6 +20,8 @@ parser.add_argument('--donot-skip-zeros', help='removing from dendrogram values 
 parser.add_argument('--donot-skip-non-zeros', help='removing from dendrogram values that are all greater then 0 for same label', action='store_true', required=False, default=False)
 parser.add_argument('--dendro-file-name', help='name of pdf file containing ploted dedrogram will be saved in output dir (--odir flag)', type=str, required=False, default='dendro.pdf')
 parser.add_argument('--top-font-size', help='size of font used to plot gene names on top dendrogram', type=int, required=False, default='1')
+parser.add_argument('--filter-value', help='drops column if absolute value of difference between max and min in gene less then filter value', type=float, required=False, default='0')
+
 
 
 args = parser.parse_args()
@@ -29,7 +31,8 @@ cdict = {
     'threads': args.threads, 'files': args.files, 'odir': args.odir,
     'z': args.donot_skip_zeros, 'nz': args.donot_skip_non_zeros,
     'of': args.dendro_file_name, 'top_font': args.top_font_size, 
-    'nucleotide':args.nucleotide, 'ref_cleared':args.ref.rsplit('.',1)[0]+'_cleared.'+args.ref.rsplit('.',1)[1]}
+    'nucleotide':args.nucleotide, 'ref_cleared':args.ref.rsplit('.',1)[0]+'_cleared.'+args.ref.rsplit('.',1)[1],
+    'filter':args.filter_value}
 
 if not os.path.exists(args.odir):
     os.makedirs(args.odir)

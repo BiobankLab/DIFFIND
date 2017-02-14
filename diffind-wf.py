@@ -84,7 +84,7 @@ class plot(luigi.Task):
             print self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]+'.clstr'
             c.load_from_file(str(self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]+'.clstr'))
             chit_set.append(c)
-
+        #chit_set.add_filter(*)
         chit_set.analyze()
         z = 1
         nz = 1
@@ -95,6 +95,9 @@ class plot(luigi.Task):
         if self.param['nz']:
             nz = 0
         sys.setrecursionlimit(10000)
+        if self.param['filter'] > 0:
+            chit_set.set_filter(self.param['filter'])
+        #chit_set.set_filter(10)
         df = chit_set.to_df(z, nz)
         with open(self.param['odir']+'/'+'non-zeros.txt', 'wb') as nzf:
             for q in chit_set.all_non_zeros:
@@ -102,6 +105,10 @@ class plot(luigi.Task):
         with open(self.param['odir']+'/'+'zeros.txt', 'wb') as zf:
             for q in chit_set.all_zeros:
                 zf.write(q[4:]+'\n')
+        if self.param['filter'] > 0:
+            with open(self.param['odir']+'/'+'droped.txt', 'wb') as drp:
+                for q in chit_set.cols_dropped:
+                    drp.write(q[4:]+'\n')
         #plot = chit_set.make_dendrogram2(df);
         plot = chit_set.make_dendrogram(df, (40, 20), self.param['top_font'])
         # print self.param['of']
