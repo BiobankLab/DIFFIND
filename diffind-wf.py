@@ -28,10 +28,11 @@ class clean_ref(luigi.Task):
         ref = Fa.load_from_file(str(self.param['ref']))
         #len(ref)
         i = 0
-        for r in ref.contigs:
-            r.name =  '>'+str("%04d" % i)+r.name[1:]
-            i+=1
-        #self.param['ref'] = self.param['ref'].rsplit('.',1)[0]+'_cleared'+self.param['ref'].rsplit('.',1)[1]
+        if self.param['clear']:
+            for r in ref.contigs:
+                r.name =  '>'+str("%04d" % i)+r.name[1:]
+                i+=1
+            #self.param['ref'] = self.param['ref'].rsplit('.',1)[0]+'_cleared'+self.param['ref'].rsplit('.',1)[1]
         ref.write(str(self.param['ref_cleared']))
         
     def output(self):
