@@ -22,7 +22,7 @@ parser.add_argument('--dendro-file-name', help='name of pdf file containing plot
 parser.add_argument('--top-font-size', help='size of font used to plot gene names on top dendrogram', type=int, required=False, default='1')
 parser.add_argument('--filter-value', help='drops column if absolute value of difference between max and min in gene less then filter value', type=float, required=False, default='0')
 parser.add_argument('--drop-single-zero', help='drops column if single zero found', action='store_true', required=False, default=False)
-parser.add_argument('--no-clear', '', action='store_false', required=False, default=True)
+parser.add_argument('--no-clear', help='does not attach numbers to genes nqmes', action='store_false', required=False, default=True)
 
 
 args = parser.parse_args()

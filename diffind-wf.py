@@ -111,9 +111,11 @@ class plot(luigi.Task):
                 for q in chit_set.cols_dropped:
                     drp.write(q[4:]+'\n')
         #plot = chit_set.make_dendrogram2(df);
-        for column in df:
-            if float(df[column].min()) == 0.0:
-                del df[column]
+        # removes columns containng at least one 0 value 
+        if self.param['drop_zero']:
+            for column in df:
+                if float(df[column].min()) == 0.0:
+                    del df[column]
         plot = chit_set.make_dendrogram(df, (40, 20), self.param['top_font'])
         # print self.param['of']
         plot.savefig(self.param['odir']+'/'+self.param['of'], bbox_inches='tight')
