@@ -13,23 +13,14 @@ optional arguments:
   -h, --help            show this help message and exit
   -v, --version         display version number and exit
   -c                    Sequence identity threshold
-  -g                    By cd hit�s default algorithm, a sequence is clustered
+  -g                    By cd hit's default algorithm, a sequence is clustered
                         to the first cluster that meet the threshold (fast
                         mode). If set to 1, the program will cluster it into
                         the most similar cluster that meet the
                         threshold(accurate but slow mode)
   -s2                   length difference cutoff for db1, default 1.0 by
                         default, seqs in db1 >= seqs in db2 in a same cluster
-                        if set to 0.9, seqs in db1 may just >= 90{'const':
-                        None, 'help': 'length difference cutoff for db1,
-                        default 1.0 by default, seqs in db1 >= seqs in db2 in
-                        a same cluster if set to 0.9, seqs in db1 may just >=
-                        90% seqs in db2', 'option_strings': ['-s2'], 'dest':
-                        's2', 'required': False, 'nargs': None, 'choices':
-                        None, 'default': 1.0, 'prog': 'diffind-start.py',
-                        'container': <argparse._ArgumentGroup object at
-                        0x7f7b031c9ed0>, 'type': 'float', 'metavar': None}eqs
-                        in db2
+                        if set to 0.9, seqs in db1 may just >= 90% seqs in db2
   --ref REF             Reference file files will be compared with it
   --files FILES [FILES ...]
                         List of files to be checked against --ref
@@ -51,4 +42,4 @@ optional arguments:
                         drops column if absolute value of difference between
                         max and min in gene less then filter value
   --drop-single-zero    drops column if single zero found
-  --no-clear            does not attach numbers to genes nqmes
+  --no-clear            does not attach numbers to genes names
