@@ -57,7 +57,7 @@ class cdhit_analisys(luigi.Task):
                 cmd_list.append(['cdhit-est-2d', '-i', str(self.param['ref_cleared']), '-i2', str(f), '-c', str(self.param['c']), '-g', str(self.param['g']), '-s2', str(self.param['s2']), '-o', self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]])
             else:
                 cmd_list.append(['cdhit-2d', '-i', str(self.param['ref_cleared']), '-i2', str(f), '-c', str(self.param['c']), '-g', str(self.param['g']), '-s2', str(self.param['s2']), '-o', self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]])
-        print cmd_list
+        #print cmd_list
         p = Pool(int(self.param['threads']))
         # p.map(cdhit_analisys.exec_cdhit, cmd_list)
         with Pool(int(self.param['threads'])) as p:
@@ -66,8 +66,10 @@ class cdhit_analisys(luigi.Task):
     def output(self):
         fl = []
         for f in self.param['files']:
-            # print self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]+'.clstr'
+            #print self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]+'.clstr'
             fl.append(luigi.LocalTarget(self.param['odir']+'/'+os.path.splitext(os.path.basename(f))[0]+'.clstr'))
+        #print '\n'*3+'=='*10+'\n'
+        #print fl
         return fl
 
 
@@ -116,7 +118,10 @@ class plot(luigi.Task):
             for column in df:
                 if float(df[column].min()) == 0.0:
                     del df[column]
-        plot = chit_set.make_dendrogram(df, (40, 20), self.param['top_font'])
+        #print '\n'*3+'=='*10+'\n'
+        #print self.param['width'], self.param['height'], self.param['left_font_size']
+        #exit()
+        plot = chit_set.make_dendrogram(df, (self.param['width'], self.param['height']), self.param['top_font'], self.param['left_font_size'])
         # print self.param['of']
         plot.savefig(self.param['odir']+'/'+self.param['of'], bbox_inches='tight')
         chit_set.clusters.to_csv(self.param['odir']+'/'+'cluster_info.csv', ';')
